@@ -4,6 +4,8 @@ license:             BSD3
 
 dependencies:
 - base >= 4.7 && < 5
+- servant
+- servant-server
 
 library:
   source-dirs: src
