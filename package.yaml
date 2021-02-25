@@ -2,10 +2,16 @@ name:                weather-api
 version:             0.1.0.0
 license:             BSD3
 
+ghc-options:
+  - -Wall
+
 dependencies:
 - base >= 4.7 && < 5
 - servant
 - servant-server
+- warp
+- mtl
+- servant-flatten
 
 library:
   source-dirs: src
