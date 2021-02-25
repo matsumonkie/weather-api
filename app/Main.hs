@@ -1,7 +1,12 @@
+{-# LANGUAGE TypeApplications #-}
+
 module Main where
 
-import           Server.App (run)
+import           System.Environment
+
+import           Server.App         (run)
 
 main :: IO ()
 main = do
-  run 8888
+  [port] <- getArgs
+  run $ read @Int port
