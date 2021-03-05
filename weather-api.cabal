@@ -12,22 +12,30 @@ build-type:     Simple
 
 library
   exposed-modules:
+      City.Model
+      City.Sql
+      DB
       Lib
       Server.App
       Server.Model
       Weather.Api
       Weather.App
+      Weather.Model
+      Weather.Sql
   other-modules:
       Paths_weather_api
   hs-source-dirs:
       src
   ghc-options: -Wall
   build-depends:
-      base >=4.7 && <5
+      aeson
+    , base >=4.7 && <5
     , mtl
+    , postgresql-simple
     , servant
     , servant-flatten
     , servant-server
+    , uuid
     , warp
   default-language: Haskell2010
 
@@ -39,11 +47,14 @@ executable weather-api-exe
       app
   ghc-options: -Wall -threaded -rtsopts -with-rtsopts=-N
   build-depends:
-      base >=4.7 && <5
+      aeson
+    , base >=4.7 && <5
     , mtl
+    , postgresql-simple
     , servant
     , servant-flatten
     , servant-server
+    , uuid
     , warp
     , weather-api
   default-language: Haskell2010
@@ -57,11 +68,14 @@ test-suite weather-api-test
       test
   ghc-options: -Wall -threaded -rtsopts -with-rtsopts=-N
   build-depends:
-      base >=4.7 && <5
+      aeson
+    , base >=4.7 && <5
     , mtl
+    , postgresql-simple
     , servant
     , servant-flatten
     , servant-server
+    , uuid
     , warp
     , weather-api
   default-language: Haskell2010

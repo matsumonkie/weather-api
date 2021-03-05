@@ -1,0 +1,18 @@
+CREATE EXTENSION "uuid-ossp";
+CREATE EXTENSION PGCRYPTO;
+
+CREATE TABLE weather (
+  id UUID PRIMARY KEY,
+  name TEXT NOT NULL
+);
+
+CREATE TABLE city (
+  id UUID PRIMARY KEY,
+  name TEXT NOT NULL
+);
+
+CREATE TABLE city_weather (
+  id UUID PRIMARY KEY,
+  city_id UUID REFERENCES city(id) UNIQUE,
+  weather_id UUID REFERENCES weather(id)
+);

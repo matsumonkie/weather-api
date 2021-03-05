@@ -7,11 +7,14 @@ ghc-options:
 
 dependencies:
 - base >= 4.7 && < 5
+- warp
 - servant
 - servant-server
-- warp
-- mtl
 - servant-flatten
+- mtl
+- postgresql-simple
+- uuid
+- aeson
 
 library:
   source-dirs: src
