@@ -15,9 +15,14 @@ dependencies:
 - postgresql-simple
 - uuid
 - aeson
+- text
 
 library:
   source-dirs: src
+  dependencies:
+  - safe-exceptions
+  - foreign-store
+  - say
 
 executables:
   weather-api-exe:
@@ -40,3 +45,7 @@ tests:
     - -with-rtsopts=-N
     dependencies:
     - weather-api
+    - hspec
+    - servant-client
+    - http-client
+    - http-types

@@ -1,5 +1,4 @@
-{-# LANGUAGE ConstraintKinds #-}
-{-# LANGUAGE DataKinds       #-}
+{-# LANGUAGE DataKinds #-}
 
 module Server.App(run, mkApp) where
 
