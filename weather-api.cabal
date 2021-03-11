@@ -16,6 +16,7 @@ library
       City.Sql
       DB
       DevelMain
+      Environment
       Lib
       Server.App
       Server.Model
@@ -88,6 +89,7 @@ test-suite weather-api-test
     , servant-client
     , servant-flatten
     , servant-server
+    , stm
     , text
     , uuid
     , warp

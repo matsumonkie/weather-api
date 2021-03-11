@@ -49,3 +49,4 @@ tests:
     - servant-client
     - http-client
     - http-types
+    - stm

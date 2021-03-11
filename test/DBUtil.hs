@@ -4,6 +4,7 @@
 
 module DBUtil where
 
+import           Data.UUID                        (UUID)
 import qualified Database.PostgreSQL.Simple       as PG
 import           Database.PostgreSQL.Simple.SqlQQ
 import           GHC.Int                          (Int64)
@@ -25,4 +26,16 @@ insertCityWeather connection cityName weatherName = do
           )
           INSERT INTO city_weather (id, city_id, weather_id)
           VALUES (gen_random_uuid(), (select id from cityId), (select id from weatherId))
+          |]
+
+insertCity :: PG.Connection -> String -> IO UUID
+insertCity connection cityName = do
+  [ PG.Only id ] <- PG.query connection sqlQuery (PG.Only cityName)
+  return id
+  where
+    sqlQuery =
+      [sql|
+          INSERT INTO city (id, name)
+          VALUES (gen_random_uuid(), ?)
+          RETURNING id
           |]

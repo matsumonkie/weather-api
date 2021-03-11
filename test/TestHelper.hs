@@ -1,7 +1,9 @@
-{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE OverloadedStrings   #-}
+{-# LANGUAGE ScopedTypeVariables #-}
 
 module TestHelper where
 
+import qualified Control.Concurrent.STM           as STM
 import qualified Control.Exception                as Exception
 import qualified Control.Monad                    as Monad
 import           Data.Text                        (Text)
@@ -15,18 +17,51 @@ import           Servant.Client
 import qualified Test.Hspec                       as Hspec
 
 import           DB
+import           Environment
+import           Server.App                       (mkApp)
 
 try :: ClientEnv -> ClientM a -> IO a
 try clientEnv action =
   either Exception.throwIO return =<< runClientM action clientEnv
 
-withClient :: IO Application -> Hspec.SpecWith ClientEnv -> Hspec.SpecWith ()
-withClient app innerSpec =
+readMessages :: STM.TVar [String] -> IO [String]
+readMessages messages =
+  STM.readTVarIO messages
+
+cleanLogs :: STM.TVar [String] -> IO ()
+cleanLogs messages = do
+  STM.atomically $ STM.writeTVar messages []
+
+cleanAppState :: STM.TVar [String] -> (PG.Connection -> IO a) -> IO a
+cleanAppState messages f = do
+  cleanLogs messages
+  cleanDBBefore f
+
+data TestEnv = TestEnv
+    { testClientEnv :: ClientEnv
+    , testMessages  :: STM.TVar [String]
+    }
+
+withClient :: Hspec.SpecWith TestEnv -> Hspec.SpecWith ()
+withClient innerSpec = do
+  (messages, application) <- Hspec.runIO buildApp
   Hspec.beforeAll (Client.newManager Client.defaultManagerSettings) $
     flip Hspec.aroundWith innerSpec $ \action httpManager ->
-      testWithApplication app $ \port -> do
+      testWithApplication (return application) $ \port -> do
         let testBaseUrl = BaseUrl Http "localhost" port ""
-        action $ ClientEnv httpManager testBaseUrl Nothing defaultMakeClientRequest
+        let testEnv = TestEnv { testClientEnv = ClientEnv httpManager testBaseUrl Nothing defaultMakeClientRequest
+                              , testMessages = messages
+                              }
+        action testEnv
+   where
+     buildApp :: IO (STM.TVar [String], Application)
+     buildApp = do
+       messages <- STM.newTVarIO []
+       let logFunc newMsg = STM.atomically $ STM.modifyTVar messages (\state -> state ++ [newMsg])
+       app <- mkApp $ Environment { envLog = logFunc
+                                  , envSendReport = \_ -> return ()
+                                  }
+       return (messages, app)
 
 errorsWithStatus :: Status -> ClientError -> Bool
 errorsWithStatus status servantError =
