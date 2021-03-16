@@ -1,5 +1,3 @@
-{-# LANGUAGE ScopedTypeVariables #-}
-
 module Test.Helper ( module Test.Client
                    , module Test.Cleaner
                    , try

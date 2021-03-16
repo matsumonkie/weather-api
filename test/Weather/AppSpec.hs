@@ -1,5 +1,4 @@
-{-# LANGUAGE RecordWildCards     #-}
-{-# LANGUAGE ScopedTypeVariables #-}
+{-# LANGUAGE RecordWildCards #-}
 
 module Weather.AppSpec where
 
