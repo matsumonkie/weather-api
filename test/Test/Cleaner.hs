@@ -11,14 +11,14 @@ import qualified Database.PostgreSQL.Simple.Types as PG
 
 import           DB
 
-cleanLogs :: STM.TVar [String] -> IO ()
-cleanLogs messages = do
-  STM.atomically $ STM.writeTVar messages []
-
 cleanAppState :: STM.TVar [String] -> (PG.Connection -> IO a) -> IO a
 cleanAppState messages f = do
   cleanLogs messages
   cleanDBBefore f
+
+cleanLogs :: STM.TVar [String] -> IO ()
+cleanLogs messages = do
+  STM.atomically $ STM.writeTVar messages []
 
 cleanDBBefore :: (PG.Connection -> IO a) -> IO a
 cleanDBBefore f = do
