@@ -1,13 +1,13 @@
 module Test.Client where
 
 import qualified Control.Concurrent.STM   as STM
-import           Environment
 import qualified Network.HTTP.Client      as Client
 import           Network.Wai.Handler.Warp (testWithApplication)
 import           Servant
 import           Servant.Client
 import qualified Test.Hspec               as Hspec
 
+import           Environment
 import           Server.App               (mkApp)
 
 data TestEnv = TestEnv
