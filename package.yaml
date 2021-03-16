@@ -23,6 +23,7 @@ library:
   - safe-exceptions
   - foreign-store
   - say
+  - dhall
 
 executables:
   weather-api-exe:

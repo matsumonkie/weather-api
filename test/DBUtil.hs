@@ -8,6 +8,7 @@ import           Data.UUID                        (UUID)
 import qualified Database.PostgreSQL.Simple       as PG
 import           Database.PostgreSQL.Simple.SqlQQ
 import           GHC.Int                          (Int64)
+import           Prelude                          hiding (id)
 
 insertCityWeather :: PG.Connection -> String -> String -> IO Int64
 insertCityWeather connection cityName weatherName = do

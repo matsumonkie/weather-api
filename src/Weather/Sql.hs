@@ -1,7 +1,10 @@
-{-# LANGUAGE QuasiQuotes #-}
+{-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE QuasiQuotes      #-}
 
 module Weather.Sql where
 
+import qualified Control.Monad.IO.Class           as IO
+import qualified Control.Monad.Reader             as Reader
 import           Data.Functor                     ((<&>))
 import qualified Data.Maybe                       as Maybe
 import qualified Database.PostgreSQL.Simple       as PG
@@ -10,12 +13,17 @@ import           GHC.Int                          (Int64)
 
 import           City.Model
 import           DB
+import           Environment
 import           Weather.Model
 
-selectCityWeather :: City -> IO (Maybe Weather)
+selectCityWeather
+  :: ( Reader.MonadReader Environment m
+     , IO.MonadIO m
+     )
+  => City -> m (Maybe Weather)
 selectCityWeather city = do
   withDBConnection $ \connection ->
-    PG.query connection sqlQuery (PG.Only (cityId city)) <&> Maybe.listToMaybe
+    IO.liftIO $ PG.query connection sqlQuery (PG.Only (cityId city)) <&> Maybe.listToMaybe
   where
     sqlQuery =
       [sql|
@@ -28,7 +36,11 @@ selectCityWeather city = do
           )
           |]
 
-selectWeather :: String -> IO (Maybe Weather)
+selectWeather
+  :: ( Reader.MonadReader Environment m
+     , IO.MonadIO m
+     )
+  => String -> m (Maybe Weather)
 selectWeather location = do
   withDBConnection $ \connection ->
     PG.query connection sqlQuery (PG.Only location) <&> Maybe.listToMaybe
@@ -41,7 +53,11 @@ selectWeather location = do
           LIMIT 1
           |]
 
-setCityWeather :: City -> Weather -> IO Int64
+setCityWeather
+  :: ( Reader.MonadReader Environment m
+     , IO.MonadIO m
+     )
+  => City -> Weather -> m Int64
 setCityWeather city weather = do
   withDBConnection $ \connection ->
     PG.execute connection sqlQuery ( cityId city

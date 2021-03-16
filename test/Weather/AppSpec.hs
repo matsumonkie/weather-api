@@ -1,5 +1,4 @@
-{-# LANGUAGE RecordWildCards     #-}
-{-# LANGUAGE ScopedTypeVariables #-}
+{-# LANGUAGE RecordWildCards #-}
 
 module Weather.AppSpec where
 
@@ -10,7 +9,7 @@ import qualified Servant.Client     as Servant
 import           Test.Hspec
 
 import           DBUtil
-import           TestHelper
+import           Test.Helper
 import           Weather.Api
 import           Weather.Model
 
@@ -26,15 +25,15 @@ spec = do
       it "should fail when the location is unknown" $ \TestEnv{..} ->
         try testClientEnv (getWeatherHandler "unknown location") `shouldThrow` errorsWithStatus HTTP.notFound404
 
-      it "should return the weather when the location exists" $ \TestEnv{..} ->
-        cleanAppState testMessages $ \connection -> do
+      it "should return the weather when the location exists" $ \testEnv@TestEnv{..} ->
+        cleanAppState testEnv $ \connection -> do
           let newCity = "marseille"
           _ <- insertCityWeather connection newCity "sunny"
           weather <- try testClientEnv (getWeatherHandler newCity)
           weatherName weather `shouldBe` "sunny"
 
-      it "should logs a message if the city exists but doesn't have a weather" $ \TestEnv{..} ->
-        cleanAppState testMessages $ \connection -> do
+      it "should logs a message if the city exists but doesn't have a weather" $ \testEnv@TestEnv{..} ->
+        cleanAppState testEnv $ \connection -> do
           let newCity = "marseille"
           _ <- insertCity connection newCity
           try testClientEnv (getWeatherHandler newCity) `shouldThrow` errorsWithStatus HTTP.internalServerError500

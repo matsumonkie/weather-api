@@ -1,22 +1,36 @@
+{-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE RecordWildCards  #-}
+
 module DB (withDBConnection) where
 
+import qualified Control.Monad.IO.Class     as IO
+import qualified Control.Monad.Reader       as Reader
+import           Data.Functor               ((<&>))
 import qualified Database.PostgreSQL.Simple as PG
 
-withDBConnection :: (PG.Connection -> IO a) -> IO a
+import           Environment
+
+withDBConnection
+  :: ( Reader.MonadReader Environment m
+     , IO.MonadIO m
+     )
+  => (PG.Connection -> IO a) -> m a
 withDBConnection f = do
   connection <- getDBConnection
-  res <- f connection
+  res <- IO.liftIO $ f connection
   closeDBConnection connection
   return res
 
-getDBConnection :: IO PG.Connection
-getDBConnection =
-  PG.connect PG.defaultConnectInfo { PG.connectDatabase = "weather"
-                                   , PG.connectUser = "dev"
-                                   , PG.connectPort = 5432
-                                   , PG.connectPassword = ""
-                                   }
+getDBConnection :: (Reader.MonadReader Environment m, IO.MonadIO m) => m PG.Connection
+getDBConnection = do
+  Config{..} <- Reader.ask <&> envConfig
+  IO.liftIO $ PG.connect PG.defaultConnectInfo
+    { PG.connectDatabase = cfgDBName
+    , PG.connectUser = cfgDBUser
+    , PG.connectPort = cfgDBPort
+    , PG.connectPassword = cfgDBPassword
+    }
 
-closeDBConnection :: PG.Connection -> IO ()
+closeDBConnection :: (IO.MonadIO m) => PG.Connection -> m ()
 closeDBConnection connection =
-  PG.close connection
+  IO.liftIO $ PG.close connection

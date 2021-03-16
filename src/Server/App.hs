@@ -1,4 +1,5 @@
-{-# LANGUAGE DataKinds #-}
+{-# LANGUAGE DataKinds         #-}
+{-# LANGUAGE OverloadedStrings #-}
 
 module Server.App(run, mkApp) where
 
@@ -14,8 +15,10 @@ import           Weather.Api
 run :: Int -> IO ()
 run port = do
   putStrLn $ "running api on port: " <> show port
+  config <- loadConfig "./prod.dhall"
   let environment = Environment { envLog = Say.sayString
                                 , envSendReport = \_ -> Concurrent.threadDelay 2000
+                                , envConfig = config
                                 }
   app <- mkApp environment
   Warp.run port app
