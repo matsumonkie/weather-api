@@ -10,7 +10,7 @@ import qualified Servant.Client     as Servant
 import           Test.Hspec
 
 import           DBUtil
-import           TestHelper
+import           Test.Helper
 import           Weather.Api
 import           Weather.Model
 

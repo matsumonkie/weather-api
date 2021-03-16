@@ -71,7 +71,9 @@ test-suite weather-api-test
   main-is: Spec.hs
   other-modules:
       DBUtil
-      TestHelper
+      Test.Cleaner
+      Test.Client
+      Test.Helper
       Weather.AppSpec
       Paths_weather_api
   hs-source-dirs:
