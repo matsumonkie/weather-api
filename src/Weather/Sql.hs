@@ -23,7 +23,7 @@ selectCityWeather
   => City -> m (Maybe Weather)
 selectCityWeather city = do
   withDBConnection $ \connection ->
-    IO.liftIO $ PG.query connection sqlQuery (PG.Only (cityId city)) <&> Maybe.listToMaybe
+    PG.query connection sqlQuery (PG.Only (cityId city)) <&> Maybe.listToMaybe
   where
     sqlQuery =
       [sql|

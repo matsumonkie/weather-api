@@ -1,4 +1,3 @@
-{-# LANGUAGE DeriveGeneric     #-}
 {-# LANGUAGE FlexibleContexts  #-}
 {-# LANGUAGE OverloadedStrings #-}
 
@@ -8,7 +7,6 @@ import qualified Control.Monad.IO.Class as IO
 import qualified Control.Monad.Reader   as Reader
 import           Data.Text              (Text)
 import qualified Dhall
-import           GHC.Generics           (Generic)
 import           GHC.Word               (Word16)
 import           Prelude                hiding (log)
 
@@ -19,7 +17,7 @@ data Config = Config
     , cfgDBUser      :: String
     , cfgDBPassword  :: String
     }
-    deriving (Generic, Show)
+    deriving Show
 
 instance Dhall.FromDhall Config where
   autoWith _ = Dhall.record $
